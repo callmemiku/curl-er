@@ -1,11 +1,13 @@
 package com.miku.curler.service
 
 import groovy.util.logging.Slf4j
+import groovy.yaml.YamlSlurper
 import org.springframework.stereotype.Component
 
 @Component
 @Slf4j
 class Service {
+
     def ppots = ["ppotKurg",
                  "ppotNizh",
                  "ppotAltKr",
@@ -65,8 +67,10 @@ class Service {
 
 
     def send() {
+        boolean jar = Service.class.getResource('Service.class').toString().contains("jar")
+        def data = new YamlSlurper().parse(jar ? 'application.yml' as File : "src/main/resources/application.yml" as File)
         for (def ppot: ppots) {
-            def post = (new URL("http://localhost:9099/migration/parent-case-link/${ppot}/russian-passport/rfp/start").openConnection() as HttpURLConnection)
+            def post = (new URL("http://localhost:${data.app.ext}/migration/parent-case-link/${ppot}/${data.app.system}/${data.app.small}/start").openConnection() as HttpURLConnection)
             post.setRequestProperty("Content-Type", "application/json")
             post.doOutput = true
             post.requestMethod = 'POST'
