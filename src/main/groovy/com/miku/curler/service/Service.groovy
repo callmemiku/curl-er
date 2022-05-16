@@ -127,7 +127,7 @@ class Service {
         if (lines.size() == 0) {
             log.info("Blank file.")
         } else {
-            def separator = lines[0].replaceAll("[^\\\\\\s/A-z0-9]", "").substring(0, 1)
+            def separator = lines[0].replaceAll("[\\sA-я0-9\\\\/]", "").substring(0, 1)
             lines.each { line ->
                 {
                     def data = line.split(separator)
