@@ -99,20 +99,20 @@ class Service {
         def sql = Sql.newInstance(params.db.url, params.db.user, params.db.pw, params.db.driver)
         data.each {person -> {
             def date = (person.date as String).split("\\.")
+            def cons = person.mname == 'НЕТ' ? "" : "\n                AND pmd.PATRONYMIC_NAME_CYR = '${person.mname}'"
             def query = """
                 SELECT pmd.CITIZENSHIP_COUNTRY_SID as v
                 FROM CBDUIGDATA.PET_CITIZENSHIP cit
                 INNER JOIN CBDUIGDATA.PERSON_DOCUMENT p_doc ON p_doc.SID = cit.PID
                 INNER JOIN CBDUIGDATA.PERSON_MAIN_DATA pmd ON pmd.SID = p_doc.PID
                 WHERE pmd.LAST_NAME_CYR = '${person.lname}' 
-                AND pmd.FIRST_NAME_CYR = '${person.fname}' 
-                ${person.mname == 'НЕТ' ? "" : "AND pmd.PATRONYMIC_NAME_CYR = '${person.mname}'"} 
+                AND pmd.FIRST_NAME_CYR = '${person.fname}'${cons} 
                 AND pmd.BIRTH_DAY = ${date[0] as Long} 
                 AND pmd.BIRTH_MONTH =${date[1] as Long} 
                 AND pmd.BIRTH_YEAR =${date[2] as Long};
             """
             sql.rows(query as String).each {writer.write(it.v)}
-            log.info("Querying DB: ${count} / ${all}.")
+            log.info("Querying DB: ${count + 1} / ${all}.")
             count = count + 1
         }}
         writer.flush()
