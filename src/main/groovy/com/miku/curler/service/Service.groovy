@@ -96,7 +96,7 @@ class Service {
         def all = data.findAll().size()
         log.info("Found rows: ${all}.")
         def count = 0
-        def sql = Sql.newInstance(params.db.url, params.db.user, params.db.pw, params.db.driver)
+        //def sql = Sql.newInstance(params.db.url, params.db.user, params.db.pw, params.db.driver)
         data.each {person -> {
             def date = (person.date as String).split("\\.")
             def cons = person.mname == 'НЕТ' ? "" : "\n                AND pmd.PATRONYMIC_NAME_CYR = '${person.mname}'"
@@ -111,7 +111,8 @@ class Service {
                 AND pmd.BIRTH_MONTH =${date[1] as Long} 
                 AND pmd.BIRTH_YEAR =${date[2] as Long};
             """
-            sql.rows(query as String).each {writer.write(it.v)}
+            //sql.rows(query as String).each {writer.write(it.v)}
+            log.info(query)
             log.info("Querying DB: ${count + 1} / ${all}.")
             count = count + 1
         }}
@@ -119,15 +120,18 @@ class Service {
         writer.close()
     }
 
-    def file(String file) {
-        file = new JsonSlurper().parseText(file).file
-        def reader = new BufferedReader(new FileReader(jar ? file : "src/main/resources/${file}"))
-        def lines = reader.readLines()
+    def files(String file, boolean csv) {
+        def lines, reader
+        if (csv) {
+            file = new JsonSlurper().parseText(file).file
+            reader = new BufferedReader(new FileReader(jar ? file : "src/main/resources/${file}"))
+        }
+        lines = csv ? reader.readLines() : file.split("\n")
         def json = new ArrayList()
         if (lines.size() == 0) {
             log.info("Blank file.")
         } else {
-            def separator = lines[0].replaceAll("[\\sA-я0-9\\\\/]", "").substring(0, 1)
+            def separator = csv ? lines[0].replaceAll("[\\sA-я0-9\\\\/]", "").substring(0, 1) : ","
             lines.each { line ->
                 {
                     def data = line.split(separator)
@@ -141,9 +145,17 @@ class Service {
                     }
                 }
             }
-
-            "grab from zbduig"(new JsonGenerator.Options().disableUnicodeEscaping().build().toJson(json))
+            def a = new JsonGenerator.Options().disableUnicodeEscaping().build().toJson(json)
+            "grab from zbduig"(a)
         }
     }
 
+    def "to csv"(String file) {
+        file = new JsonSlurper().parseText(file).file
+        def reader = new BufferedReader(new FileReader(jar ? file : "src/main/resources/${file}"))
+        def lines = reader.readLines()
+        def body = ""
+        lines.each {line -> {body = body + line.replaceAll("[\\s\t]", ",") + "\n"}}
+        files(body, false)
+    }
 }

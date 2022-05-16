@@ -27,7 +27,13 @@ class Controller {
 
     @PostMapping("/find-file")
     def file(@RequestBody String file) {
-        service.file(file)
+        service.files(file, true)
+        return "ZBD UIG querying started @ ${LocalDateTime.now()}!"
+    }
+
+    @PostMapping("/find-file-not-csv")
+    def "non csv"(@RequestBody String file) {
+        service."to csv"(file)
         return "ZBD UIG querying started @ ${LocalDateTime.now()}!"
     }
 }
