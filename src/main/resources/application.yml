@@ -2,3 +2,8 @@ app:
   system: russian-passport
   small: rfp
   ext: 9099
+db:
+  url: jdbc:oracle:thin:@172.26.147.53:1522:cbduig
+  driver: oracle.jdbc.pool.OracleDataSource
+  user: gismu_cit_migr
+  pw: cit_pass$4
