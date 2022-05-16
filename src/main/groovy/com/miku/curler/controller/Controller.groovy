@@ -6,6 +6,9 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
 
+import java.time.LocalDate
+import java.time.LocalDateTime
+
 @RestController
 class Controller {
     @Autowired
@@ -14,16 +17,18 @@ class Controller {
     @PostMapping("/send")
     def send(@RequestBody String json) {
         service.send(json)
-        return "Процесс пуска рестов запущен!"
+        return "Parent-case-link started @ ${LocalDateTime.now()}!"
     }
 
     @PostMapping("/find-json")
     def json(@RequestBody String json) {
-        return service."grab from zbduig"(json)
+        service."grab from zbduig"(json)
+        return "ZBD UIG querying started @ ${LocalDateTime.now()}!"
     }
 
     @PostMapping("/find-file")
     def file(@RequestBody String file) {
-        return service.file(file)
+        service.file(file)
+        return "ZBD UIG querying started @ ${LocalDateTime.now()}!"
     }
 }
