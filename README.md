@@ -6,7 +6,7 @@ POST /send
 			"to"   : timestamp in epoch milli
 		}
 
-POST /find-files
+POST /find-file
 
 		{
 			"file" : "filename .csv or .txt"
