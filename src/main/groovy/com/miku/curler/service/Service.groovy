@@ -126,7 +126,12 @@ class Service {
         lines.each {line -> {
             def data = line.split(",")
             if (data.length == 4) {
-                json.add(["lname" : data[0], "fname" : data[1], "mname" : data[2], "date" : data[3].replaceAll("[^0-9.]", ".")])
+                json.add([
+                            "lname" : data[0],
+                            "fname" : data[1],
+                            "mname" : data[2],
+                            "date" : data[3].replaceAll("[^0-9.]", ".")
+                        ])
             }
         }}
 
