@@ -12,6 +12,13 @@ POST /find-file
 			"file" : "filename .csv or .txt"
 		}
 
+POST /find-file-not-csv
+
+		{
+			"file" : "filename with values split with SPACES or TABs .txt (?) "
+		}
+
+
 POST /find-json
 
 		[
