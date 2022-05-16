@@ -1,5 +1,6 @@
 package com.miku.curler.service
 
+import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j
 import groovy.yaml.YamlSlurper
 import org.springframework.stereotype.Component
@@ -81,6 +82,27 @@ class Service {
             }
             Thread.sleep(60 * 1000)
         }
+    }
+
+    def analyze(String json) {
+        def data = new JsonSlurper().parseText(json)
+        def writer = new BufferedWriter(new FileWriter('./result.csv'))
+        data.each {person -> {
+            def date = (person.date as String).split("\\.")
+            def query = """
+                SELECT *
+                FROM CBDUIGDATA.PET_CITIZENSHIP cit
+                INNER JOIN CBDUIGDATA.PERSON_DOCUMENT p_doc ON p_doc.SID = cit.PID
+                INNER JOIN CBDUIGDATA.PERSON_MAIN_DATA pmd ON pmd.SID = p_doc.PID
+                WHERE pmd.LAST_NAME_CYR = '${person.lname}' 
+                AND pmd.FIRST_NAME_CYR = '${person.fname}' 
+                AND pmd.PATRONYMIC_NAME_CYR = '${person.mname}' 
+                AND pmd.BIRTH_DAY = ${date[0] as Long} 
+                AND pmd.BIRTH_MONTH =${date[1] as Long} 
+                AND pmd.BIRTH_YEAR =${date[2] as Long};
+            """
+
+        }}
     }
 
 }

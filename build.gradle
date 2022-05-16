@@ -17,6 +17,7 @@ dependencies {
     implementation 'org.codehaus.groovy:groovy'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     implementation 'org.codehaus.groovy:groovy-yaml:3.0.9'
+    implementation 'org.codehaus.groovy:groovy-json:3.0.9'
 }
 
 tasks.named('test') {

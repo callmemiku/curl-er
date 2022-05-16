@@ -16,4 +16,8 @@ class Controller {
         return "Процесс пуска рестов запущен!"
     }
 
+    @PostMapping("/analyze")
+    def analyze(@RequestBody String json) {
+        return service.analyze(json)
+    }
 }
