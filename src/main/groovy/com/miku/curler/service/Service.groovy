@@ -1,15 +1,12 @@
 package com.miku.curler.service
 
-import com.fasterxml.jackson.databind.ext.SqlBlobSerializer
+
 import groovy.json.JsonGenerator
-import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 import groovy.sql.Sql
 import groovy.util.logging.Slf4j
 import groovy.yaml.YamlSlurper
 import org.springframework.stereotype.Component
-
-import java.lang.reflect.ParameterizedType
 
 @Component
 @Slf4j
@@ -108,7 +105,7 @@ class Service {
                 INNER JOIN CBDUIGDATA.PERSON_MAIN_DATA pmd ON pmd.SID = p_doc.PID
                 WHERE pmd.LAST_NAME_CYR = '${person.lname}' 
                 AND pmd.FIRST_NAME_CYR = '${person.fname}' 
-                AND pmd.PATRONYMIC_NAME_CYR = '${person.mname}' 
+                ${person.mname == 'НЕТ' ? "" : "AND pmd.PATRONYMIC_NAME_CYR = '${person.mname}'"} 
                 AND pmd.BIRTH_DAY = ${date[0] as Long} 
                 AND pmd.BIRTH_MONTH =${date[1] as Long} 
                 AND pmd.BIRTH_YEAR =${date[2] as Long};
