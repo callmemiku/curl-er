@@ -94,6 +94,7 @@ class Service {
         def data = new JsonSlurper().parseText(json)
         def writer = new BufferedWriter(new FileWriter('result.csv'))
         def all = data.findAll().size()
+        log.info("Found rows: ${all}.")
         def count = 0
         def sql = Sql.newInstance(params.db.url, params.db.user, params.db.pw, params.db.driver)
         data.each {person -> {
