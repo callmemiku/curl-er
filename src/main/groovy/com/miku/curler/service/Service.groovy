@@ -96,7 +96,7 @@ class Service {
         def all = data.findAll().size()
         log.info("Found rows: ${all}.")
         def count = 0
-        def sql = Sql.newInstance(params.db.url, params.db.user, params.db.pw, params.db.driver)
+        //def sql = Sql.newInstance(params.db.url, params.db.user, params.db.pw, params.db.driver)
         data.each {person -> {
             def date = (person.date as String).split("\\.")
             def cons = person.mname == 'НЕТ' ? "" : "\n                AND pmd.PATRONYMIC_NAME_CYR = '${person.mname}'"
@@ -111,7 +111,8 @@ class Service {
                 AND pmd.BIRTH_MONTH =${date[1] as Long} 
                 AND pmd.BIRTH_YEAR =${date[2] as Long};
             """
-            sql.rows(query as String).each {writer.write(it.v)}
+            //sql.rows(query as String).each {writer.write(it.v)}
+            log.info(query)
             log.info("Querying DB: ${count + 1} / ${all}.")
             count = count + 1
         }}
@@ -154,7 +155,20 @@ class Service {
         def reader = new BufferedReader(new FileReader(jar ? file : "src/main/resources/${file}"))
         def lines = reader.readLines()
         def body = ""
-        lines.each {line -> {body = body + line.replaceAll("[\\s\t]", ",") + "\n"}}
+        lines.each {line -> {
+                                    body = body + line
+                                    .replaceAll("[^A-я0-9\\\\/]", " ")
+                                    .replaceAll("( )+", " ")
+                                    .replaceAll("[\\s]", ",") + "\n"
+                            }
+        }
         files(body, false)
     }
 }
+
+/*
+body = body + line
+        .replaceAll("( )+", " ")
+        .replaceAll("(\t)+", "\t")
+        .replaceAll("[\\s\t]", ",") + "\n"
+        */
