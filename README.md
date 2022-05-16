@@ -15,7 +15,7 @@ POST /find-file
 POST /find-file-not-csv
 
 		{
-			"file" : "filename with values split with SPACES or TABs .txt (?) "
+			"file" : "unstructured file with various symbols but with proper data values (string, string, string, dd/MM/yyyy or dd-MM-yyyy) "
 		}
 
 
