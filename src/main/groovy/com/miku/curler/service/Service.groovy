@@ -124,19 +124,26 @@ class Service {
         def reader = new BufferedReader(new FileReader(jar ? file : "src/main/resources/${file}"))
         def lines = reader.readLines()
         def json = new ArrayList()
-        lines.each {line -> {
-            def data = line.split(",")
-            if (data.length == 4) {
-                json.add([
-                            "lname" : data[0],
-                            "fname" : data[1],
-                            "mname" : data[2],
-                            "date" : data[3].replaceAll("[^0-9.]", ".")
+        if (lines.size() == 0) {
+            log.info("Blank file.")
+        } else {
+            def separator = lines[0].replaceAll("[^\\sA-z0-9]", "").substring(0, 1)
+            lines.each { line ->
+                {
+                    def data = line.split(separator)
+                    if (data.length == 4) {
+                        json.add([
+                                "lname": data[0],
+                                "fname": data[1],
+                                "mname": data[2],
+                                "date" : data[3].replaceAll("[^0-9.]", ".")
                         ])
+                    }
+                }
             }
-        }}
 
-        "grab from zbduig"(new JsonGenerator.Options().disableUnicodeEscaping().build().toJson(json))
+            "grab from zbduig"(new JsonGenerator.Options().disableUnicodeEscaping().build().toJson(json))
+        }
     }
 
 }
