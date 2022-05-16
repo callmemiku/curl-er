@@ -157,7 +157,7 @@ class Service {
         def body = ""
         lines.each {line -> {
                                     body = body + line
-                                    .replaceAll("[^A-я0-9\\\\/]", " ")
+                                    .replaceAll("[^A-я0-9/.\\-]", " ")
                                     .replaceAll("( )+", " ")
                                     .replaceAll("[\\s]", ",") + "\n"
                             }
