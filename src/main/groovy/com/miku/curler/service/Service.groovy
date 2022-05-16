@@ -96,7 +96,7 @@ class Service {
         def all = data.findAll().size()
         log.info("Found rows: ${all}.")
         def count = 0
-        //def sql = Sql.newInstance(params.db.url, params.db.user, params.db.pw, params.db.driver)
+        def sql = Sql.newInstance(params.db.url, params.db.user, params.db.pw, params.db.driver)
         data.each {person -> {
             def date = (person.date as String).split("\\.")
             def cons = person.mname == 'НЕТ' ? "" : "\n                AND pmd.PATRONYMIC_NAME_CYR = '${person.mname}'"
@@ -111,8 +111,7 @@ class Service {
                 AND pmd.BIRTH_MONTH =${date[1] as Long} 
                 AND pmd.BIRTH_YEAR =${date[2] as Long};
             """
-            //sql.rows(query as String).each {writer.write(it.v)}
-            log.info(query)
+            sql.rows(query as String).each {writer.write(it.v)}
             log.info("Querying DB: ${count + 1} / ${all}.")
             count = count + 1
         }}
