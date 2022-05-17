@@ -21,7 +21,7 @@ class Controller {
     }
 
     @Async
-    @PostMapping("/reg-address-domigration")
+    @PostMapping("/spam-to-app")
     def "reg address domigration"(@RequestBody String json) {
         service."reg address domigration"(json)
         return "Reg address domigration started @ ${LocalDateTime.now()}!"
