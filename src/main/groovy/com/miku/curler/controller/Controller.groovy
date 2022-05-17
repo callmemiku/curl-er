@@ -14,6 +14,7 @@ class Controller {
     @Autowired
     Service service
 
+    @Deprecated
     @PostMapping("/send")
     def send(@RequestBody String json) {
         service.send(json)
@@ -23,8 +24,8 @@ class Controller {
     @Async
     @PostMapping("/spam-to-app")
     def "reg address domigration"(@RequestBody String json) {
-        service."reg address domigration"(json)
-        return "Reg address domigration started @ ${LocalDateTime.now()}!"
+        service.spam(json)
+        return "Spam started @ ${LocalDateTime.now()}!"
     }
 
     @PostMapping("/find-json")

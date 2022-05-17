@@ -74,7 +74,7 @@ class Service {
         post.requestMethod = 'POST'
     }}
 
-    def "reg address domigration"(String json) {
+    def spam(String json) {
         def data = new YamlSlurper().parse(jar ? 'application.yml' as File : "src/main/resources/application.yml" as File)
         def parsed = JsonSlurper.newInstance().parseText(json)
         for (def ppot: ppots) {
