@@ -2,6 +2,7 @@ package com.miku.curler.controller
 
 import com.miku.curler.service.Service
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.scheduling.annotation.Async
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
@@ -17,6 +18,13 @@ class Controller {
     def send(@RequestBody String json) {
         service.send(json)
         return "Parent-case-link started @ ${LocalDateTime.now()}!"
+    }
+
+    @Async
+    @PostMapping("/reg-address-domigration")
+    def "reg address domigration"(@RequestBody String json) {
+        service."reg address domigration"(json)
+        return "Reg address domigration started @ ${LocalDateTime.now()}!"
     }
 
     @PostMapping("/find-json")
