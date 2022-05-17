@@ -6,6 +6,20 @@ POST /send
 			"to"   : timestamp in epoch milli
 		}
 
+POST /spam-to-app
+
+		{
+			 "period" : 1,
+			  "path" : "migrate-reg-addresses",
+			  "message" : "
+				       {
+					'sourceSystem': ppot,
+					'sourceSubSystem': 'citizenship',
+					'targetSystem': 'cit'
+				       }
+                                      "
+}
+
 POST /find-file
 
 		{
@@ -15,7 +29,7 @@ POST /find-file
 POST /find-file-not-csv
 
 		{
-			"file" : "unstructured file with various symbols but with proper data values (string, string, string, dd/MM/yyyy or dd-MM-yyyy) "
+			"file" : "file with various symbols but with proper data values (string, string, string, dd/MM/yyyy or dd-MM-yyyy) "
 		}
 
 
