@@ -9,16 +9,14 @@ POST /send
 POST /spam-to-app
 
 		{
-			 "period" : 1,
-			  "path" : "migrate-reg-addresses",
-			  "message" : "
-				       {
-					'sourceSystem': ppot,
-					'sourceSubSystem': 'citizenship',
-					'targetSystem': 'cit'
-				       }
-                                      "
-}
+			  "period" : how many seconds between calls,
+			  "path" : "additional path AFTER port/",
+			  "message" : "{
+					'flag to be replaced with PPOT': ppot <- placeholder, do not remove or change,
+					'flag': 'flag value',
+					'flag 2': 'flag value 2'
+				       }"	
+		}
 
 POST /find-file
 
