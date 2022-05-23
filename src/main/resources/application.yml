@@ -7,3 +7,19 @@ db:
   driver:
   user:
   pw:
+  leha:
+    url:
+    user:
+    pw:
+    driver:
+    nsi:
+    nsiCit:
+logging:
+  level:
+    com.miku.curler.service.Service: debug
+sanya:
+  db:
+    url:
+    driver:
+    user:
+    pw:

@@ -19,4 +19,5 @@ dependencies {
     implementation 'org.codehaus.groovy:groovy-json:3.0.9'
     implementation 'org.codehaus.groovy:groovy-sql:3.0.9'
     implementation 'com.oracle.database.jdbc:ojdbc8:21.1.0.0'
+    implementation 'org.postgresql:postgresql:42.3.5'
 }

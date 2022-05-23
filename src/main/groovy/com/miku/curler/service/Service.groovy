@@ -1,6 +1,5 @@
 package com.miku.curler.service
 
-
 import groovy.json.JsonGenerator
 import groovy.json.JsonSlurper
 import groovy.sql.Sql
@@ -90,12 +89,10 @@ class Service {
         }
     }
 
-
-
     def send(String json) {
 
         def data = new YamlSlurper().parse(jar ? 'application.yml' as File : "src/main/resources/application.yml" as File)
-        def parsed = JsonSlurper.newInstance().parseText(json)
+        def parsed = new JsonSlurper().parseText(json)
         def message = """{"startDate": ${parsed.from}, "finishDate": ${parsed.to}}"""
 
         for (def ppot: ppots) {
@@ -186,5 +183,186 @@ class Service {
                             }
         }
         files(body, false)
+    }
+
+    def void leha() {
+        def slurper = new JsonSlurper()
+        def params = new YamlSlurper().parse(jar ? 'application.yml' as File : "src/main/resources/application.yml" as File)
+        def sql = Sql.newInstance(params.db.leha.url, params.db.leha.user, params.db.leha.pw, params.db.leha.driver)
+        def minimal = sql.firstRow("select core_person_document_id as c from core_person_document order by core_person_document_id" as String).c as Long
+        def maximal = sql.firstRow("select core_person_document_id as c from core_person_document order by core_person_document_id desc" as String).c as Long
+        def threshold = 5000
+
+        for (; minimal < maximal; minimal = minimal + threshold) {
+            def count = 0
+            def max = minimal + threshold > maximal ? maximal : minimal + threshold
+            log.info("Querying ids: ${minimal} - ${max}")
+            sql.rows("select core_person_document_id as id, citizenship_id as c from core_person_document where core_person_document_id between ${minimal} and ${max}" as String).each {
+                def countryNsi = (new URL("${params.db.leha.nsi}${it.c}").openConnection() as HttpURLConnection)
+                countryNsi.requestMethod = 'GET'
+                countryNsi.doOutput = true
+                if (countryNsi.getResponseCode() == 200) {
+                    def inner = slurper.parseText(countryNsi.getInputStream().getText())
+                    def oldID = it.c, newID = ""
+                    if (inner.catalogCode != "citizenships") {
+                        def message = """{
+                                        "AND": {
+                                            "filters": [
+                                                {
+                                                    "key": "fullName",
+                                                    "values": [
+                                                        "${inner.attributeSet.name}"
+                                                    ],
+                                                    "type": "EXACT"
+                                                }
+                                            ]
+                                        }
+                                    }"""
+                        def citNsi = (new URL("${params.db.leha.nsiCit}").openConnection() as HttpURLConnection)
+                        set.call(citNsi)
+                        citNsi.getOutputStream().write(message.getBytes("UTF-8"))
+                        if (citNsi.getResponseCode() == 200) {
+                            //sql.executeUpdate("update core_person_document set citizenship_id = ${slurper.parseText(citNsi.getInputStream().getText()).content.recordId}")
+                            newID = slurper.parseText(citNsi.getInputStream().getText()).content.recordId
+                        } else {
+                            citNsi.getOutputStream().flush()
+                            def shortM = """{
+                                        "AND": {
+                                            "filters": [
+                                                {
+                                                    "key": "shortName",
+                                                    "values": [
+                                                        "${inner.attributeSet.shortName}"
+                                                    ],
+                                                    "type": "EXACT"
+                                                }
+                                            ]
+                                        }
+                                    } """
+                            citNsi.getOutputStream().write(shortM.getBytes("UTF-8"))
+                            if (citNsi.getResponseCode() == 200) {
+                                //sql.executeUpdate("update core_person_document set citizenship_id = ${slurper.parseText(citNsi.getInputStream().getText()).content.recordId}")
+                                newID = slurper.parseText(citNsi.getInputStream().getText()).content.recordId
+                            }
+                        }
+                        log.info "CPD #${it.id}: ${oldID} -> ${newID}!"
+                    } else {
+                        log.info "CPD #${it.id}: ${inner.catalogCode} is already citizenships!"
+                    }
+                    log.info("Done ${count + 1} / ${max}")
+                    count = count + 1
+                } else {
+                    log.info("Couldn't find ${it.c} value in NSI, CPD #${it.id}")
+                }
+            }
+        }
+        log.info "Done!"
+    }
+
+    def void "leha 2"() {
+        def slurper = new JsonSlurper()
+        def params = new YamlSlurper().parse(jar ? 'application.yml' as File : "src/main/resources/application.yml" as File)
+        def sql = Sql.newInstance(params.db.leha.url, params.db.leha.user, params.db.leha.pw, params.db.leha.driver)
+        sql.rows("select distinct citizenship_id as c from core_person_document" as String).each {
+            log.info("ID: $it.c")
+            def old = it.c
+            def countryNsi = (new URL("${params.db.leha.nsi}${it.c}").openConnection() as HttpURLConnection)
+            countryNsi.requestMethod = 'GET'
+            countryNsi.doOutput = true
+            if (countryNsi.getResponseCode() == 200) {
+                def inner = slurper.parseText(countryNsi.getInputStream().getText())
+                def newID = ""
+                if (inner.catalogCode != "citizenships") {
+                    def message = """{
+                                        "AND": {
+                                            "filters": [
+                                                {
+                                                    "key": "fullName",
+                                                    "values": [
+                                                        "${inner.attributeSet.name}"
+                                                    ],
+                                                    "type": "EXACT"
+                                                }
+                                            ]
+                                        }
+                                    }"""
+                    def citNsi = (new URL("${params.db.leha.nsiCit}").openConnection() as HttpURLConnection)
+                    set.call(citNsi)
+                    citNsi.getOutputStream().write(message.getBytes("UTF-8"))
+                    if (citNsi.getResponseCode() == 200) {
+                        //sql.executeUpdate("update core_person_document set citizenship_id = ${slurper.parseText(citNsi.getInputStream().getText()).content.recordId} where citizenship_id = ${old}")
+                        newID = slurper.parseText(citNsi.getInputStream().getText()).content.recordId
+                    } else {
+                        citNsi.getOutputStream().flush()
+                        def shortM = """{
+                                        "AND": {
+                                            "filters": [
+                                                {
+                                                    "key": "shortName",
+                                                    "values": [
+                                                        "${inner.attributeSet.shortName}"
+                                                    ],
+                                                    "type": "EXACT"
+                                                }
+                                            ]
+                                        }
+                                    } """
+                        citNsi.getOutputStream().write(shortM.getBytes("UTF-8"))
+                        if (citNsi.getResponseCode() == 200) {
+                            //sql.executeUpdate("update core_person_document set citizenship_id = ${slurper.parseText(citNsi.getInputStream().getText()).content.recordId} where citizenship_id = ${old}")
+                            newID = slurper.parseText(citNsi.getInputStream().getText()).content.recordId
+                        }
+                    }
+                    log.info "${old} -> ${newID}!"
+                } else {
+                    log.info "${it.c} is already in citizenships!"
+                }
+            } else {
+                log.info("Couldn't find ${it.c} value in NSI.")
+            }
+        }
+        log.info "Done!"
+    }
+
+    def "find these cases"(String json) {
+        def slurper = new JsonSlurper()
+        def params = new YamlSlurper().parse(jar ? 'application.yml' as File : "src/main/resources/application.yml" as File)
+        def sql = Sql.newInstance(params.sanya.db.url, params.sanya.db.user, params.sanya.db.pw, params.sanya.db.driver)
+        ppots.each { ppot ->
+            log.info("Processing ${ppot}.")
+            def post = (new URL("http://172.25.16.222:1234/search-nsi/public/v1/catalogs/legacySystemInstanceSource/records/search").openConnection() as HttpURLConnection)
+            set.call(post)
+            def message = """ {
+                                "AND": {
+                                    "filters": [
+                                        {
+                                            "key": "code",
+                                            "values": [
+                                                "${ppot}"
+                                            ],
+                                            "type": "EXACT"
+                                        }
+                                    ]
+                                }
+                            }"""
+            post.getOutputStream().write(message.getBytes("UTF-8"))
+            if (post.getResponseCode() == 200) {
+                def ppotId = slurper.parseText(post.getInputStream().getText()).content.recordId
+                def outer = sql.rows("select source_id as s from to_remigration_ppot where source_system_name = '${ppot}'" as String)
+                def count = outer.size()
+                log.info("Found ${count} rows.")
+                def i = 0
+                outer.each {
+                    sql.rows("select case_type_id as ct from core_case where source_case_id like '%${"-" + (it.s as String)}' and source_id = ${ppotId}" as String).each { row ->
+                        sql.executeUpdate("update to_remigration_ppot set case_type_id = ${row.ct} where source_id = ${it.c} and source_system_name = '${ppot}'" as String)
+                    }
+                    log.info("Done in ${ppot}: ${i + 1} / ${count}")
+                    i = i + 1
+                }
+            } else {
+                log.error("Couldn't find id for ${ppot} in NSI.")
+            }
+            log.info("Done with ${ppot}")
+        }
     }
 }

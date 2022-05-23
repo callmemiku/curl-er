@@ -45,4 +45,23 @@ class Controller {
         service."to csv"(file)
         return "ZBD UIG querying started @ ${LocalDateTime.now()}!"
     }
+
+    @PostMapping("/leha")
+    def leha(@RequestBody String json) {
+        service.leha()
+        return "LEHA PRIKOLING started @ ${LocalDateTime.now()}!"
+    }
+
+    @PostMapping("/leha-2")
+    def "leha 2"(@RequestBody String json) {
+        service."leha 2"()
+        return "LEHA PRIKOLING started @ ${LocalDateTime.now()}!"
+    }
+
+    @PostMapping("/update-case-types")
+    def up(@RequestBody String json) {
+        service."find these cases"(json)
+        return "Case types update started @ ${LocalDateTime.now()}!"
+    }
+
 }
