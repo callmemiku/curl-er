@@ -9,8 +9,10 @@ import org.springframework.web.bind.annotation.RestController
 
 import java.time.LocalDateTime
 
+@Async
 @RestController
 class Controller {
+
     @Autowired
     Service service
 

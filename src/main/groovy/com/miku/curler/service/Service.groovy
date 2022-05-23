@@ -63,7 +63,63 @@ class Service {
                  "ppotIng",
                  "ppotAstr",
                  "ppotVolg",
-                 "ppotUROGO"]
+                 "ppotUROGO"
+    ]
+
+    def ppotsWithIds = ["ppotNizh" : 2537954299099485894,
+                        "ppotHakas" : 2537954299099485894,
+                        "ppotKir" : 2537954299099485894,
+                        "ppotKurg" : 2537954299099485894,
+                        "ppotAltKr" : 2537954299099485894,
+                        "ppotSam" : 2537954299099485894,
+                        "ppotOmsk" : 2537954299099485894,
+                        "ppotEvr" : 2537954299099485894,
+                        "ppotIrk" : 2537954299099485894,
+                        "ppotIng" : 2537954299099485894,
+                        "ppotKam" : 2537954299099485894,
+                        "ppotPrim" : 2537954299099485894,
+                        "ppotKrasnodar" : 2537954299099485894,
+                        "ppotAstr" : 2537954299099485894,
+                        "ppotZPDOKG" : 2537954299099485894,
+                        "ppotMoscow" : 2537954299099485894,
+                        "ppotMf" : 2537954299099485894,
+                        "ppotCrimea" : 2537954299099485894,
+                        "ppotTat" : 2537954299099485894,
+                        "ppotSverd" : 2537954299099485894,
+                        "ppotNovos" : 2537954299099485894,
+                        "ppotChelyab" : 2537954299099485894,
+                        "ppotTumen" : 2537954299099485894,
+                        "ppotKrasn" : 2537954299099485894,
+                        "ppotPerm" : 2537954299099485894,
+                        "ppotMos" : 2537954299099485894,
+                        "ppotTyva" : 2537954299099485894,
+                        "ppotTomsk" : 2537954299099485894,
+                        "ppotSarat" : 2537954299099485894,
+                        "ppotHabar" : 2537954299099485894,
+                        "ppotVolg" : 2537954299099485894,
+                        "ppotDag" : 2537954299099485894,
+                        "ppotKemer" : 2537954299099485894,
+                        "ppotRost" : 2537954299099485894,
+                        "ppotNen" : 2537954299099485894,
+                        "ppotSahal" : 2537954299099485894,
+                        "ppotYNAO" : 2537954299099485894,
+                        "ppotZab" : 2537954299099485894,
+                        "ppotRost2" : 2537954299099485894,
+                        "ppotSahYak" : 2537954299099485894,
+                        "ppotUdmur" : 2537954299099485894,
+                        "ppotAmur" : 2537954299099485894,
+                        "ppotChuk" : 2537954299099485894,
+                        "ppotBash" : 2537954299099485894,
+                        "ppotBur" : 2537954299099485894,
+                        "ppotKalm" : 2537954299099485894,
+                        "ppotPiter" : 2537954299099485894,
+                        "ppotHMAO" : 2537954299099485894,
+                        "ppotMagad" : 2537954299099485894,
+                        "ppotStavr" : 2537954299099485894,
+                        "ppotUROGO" : 2537954299099485894,
+                        "ppotResAltay" : 2537954299099485894,
+                        "ppotOren" : 2537954299099485894
+    ]
 
     boolean jar = Service.class.getResource('Service.class').toString().contains("jar")
 
@@ -325,44 +381,22 @@ class Service {
     }
 
     def "find these cases"(String json) {
-        def slurper = new JsonSlurper()
         def params = new YamlSlurper().parse(jar ? 'application.yml' as File : "src/main/resources/application.yml" as File)
         def sql = Sql.newInstance(params.sanya.db.url, params.sanya.db.user, params.sanya.db.pw, params.sanya.db.driver)
-        ppots.each { ppot ->
-            log.info("Processing ${ppot}.")
-            def post = (new URL("http://172.25.16.222:1234/search-nsi/public/v1/catalogs/legacySystemInstanceSource/records/search").openConnection() as HttpURLConnection)
-            set.call(post)
-            def message = """ {
-                                "AND": {
-                                    "filters": [
-                                        {
-                                            "key": "code",
-                                            "values": [
-                                                "${ppot}"
-                                            ],
-                                            "type": "EXACT"
-                                        }
-                                    ]
-                                }
-                            }"""
-            post.getOutputStream().write(message.getBytes("UTF-8"))
-            if (post.getResponseCode() == 200) {
-                def ppotId = slurper.parseText(post.getInputStream().getText()).content.recordId
-                def outer = sql.rows("select source_id as s from to_remigration_ppot where source_system_name = '${ppot}'" as String)
-                def count = outer.size()
-                log.info("Found ${count} rows.")
-                def i = 0
-                outer.each {
-                    sql.rows("select case_type_id as ct from core_case where source_case_id like '%${"-" + (it.s as String)}' and source_id = ${ppotId}" as String).each { row ->
-                        sql.executeUpdate("update to_remigration_ppot set case_type_id = ${row.ct} where source_id = ${it.c} and source_system_name = '${ppot}'" as String)
-                    }
-                    log.info("Done in ${ppot}: ${i + 1} / ${count}")
-                    i = i + 1
+        ppotsWithIds.each { ppot ->
+            log.info("Processing ${ppot.key}.")
+            def outer = sql.rows("select source_id as s from to_remigration_ppot where source_system_name = '${ppot.key}'" as String)
+            def count = outer.size()
+            log.info("Found ${count} rows.")
+            def i = 0
+            outer.each {
+                sql.rows("select case_type_id as ct from core_case where source_case_id like '%${"-" + (it.s as String)}' and source_id = ${ppot.value}" as String).each { row ->
+                    sql.executeUpdate("update to_remigration_ppot set case_type_id = ${row.ct} where source_id = ${it.c} and source_system_name = '${ppot.key}'" as String)
                 }
-            } else {
-                log.error("Couldn't find id for ${ppot} in NSI.")
+                log.info("Done in ${ppot.key}: ${i + 1} / ${count}")
+                i = i + 1
             }
-            log.info("Done with ${ppot}")
+            log.info("Done with ${ppot.key}")
         }
     }
 }
