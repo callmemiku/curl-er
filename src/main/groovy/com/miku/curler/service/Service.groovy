@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component
 @Component
 @Slf4j
 class Service {
-
     def ppots = ["ppotKurg",
                  "ppotNizh",
                  "ppotAltKr",
@@ -399,4 +398,1075 @@ class Service {
             log.info("Done with ${ppot.key}")
         }
     }
+
+    String genClass() {
+        String table = htmlTable()
+        HashMap classesMap = []
+        classesMap.put("Блок \"Общие данные дела\"", new Tuple("CommonCaseInfo", new ArrayList<>()))
+        classesMap.put("Блок Связанные дела\"", new Tuple("LinkedCasesInfo", new ArrayList<>()))
+        classesMap.put("Блок \"Данные дела\"", new Tuple("CaseInfo", new ArrayList<>()))
+        classesMap.put("Блок Сведения о браке\"", new Tuple("MaritalInfo", new ArrayList<>()))
+        classesMap.put("Блок \"Дети\"", new Tuple("KidsInfo", new ArrayList<>()))
+        classesMap.put("Блок \"Процедуры дела\"", new Tuple("CaseProceduresInfo", new ArrayList<>()))
+        classesMap.put("Блок \"Входящие данные заявителя\"", new Tuple("IncomingApplicantInfo", new ArrayList<>()))
+        classesMap.put("Блок \"Исходящие данные заявителя\"", new Tuple("OutgoingApplicantInfo", new ArrayList<>()))
+        classesMap.put("Блок \"Внешнее взаимодействие (запросы)\"", new Tuple("ExternalRequestsInfo", new ArrayList<>()))
+        classesMap.put("Блок \"Внешнее взаимодействие (выгрузки)\"", new Tuple("ExternalExportsInfo", new ArrayList<>()))
+        classesMap.put("Блок \"Семья\"", new Tuple("FamilyInfo", new ArrayList<>()))
+        classesMap.put("Блок \"Платежные документы\"", new Tuple("PaymentDocumentsInfo", new ArrayList<>()))
+        classesMap.put("Блок \"Сведения о начислениях\"", new Tuple("PaymentsInfo", new ArrayList<>()))
+        classesMap.put("Блок \"Электронные копии документов\"", new Tuple("DocumentsDigitalCopyInfo", new ArrayList<>()))
+        def lastBlock = null;
+        def strings = table.split("\n")
+        def arr = []
+        def lastField = new Field()
+        def countPerField = 0
+        strings.each {
+            if (lastBlock != null) {
+                if (it.contains("</tr>")) {
+                }
+                lastBlock[1].add(lastField)
+                if (it.contains("<tr>")) {
+                    lastField = new Field()
+                }
+            } else {
+                def block = it.substring (
+                        it.indexOf("strong>") + 7,
+                        it.indexOf("</strong>")
+                )
+                if (block.contains("Блок")) {
+                    lastBlock = classesMap.get(block)
+                } else if (lastBlock != null) {
+                    arr[countPerField] = it.substring(
+                            it.indexOf("d\">") + 3,
+                            it.indexOf("</td>")
+                    )
+                    countPerField = countPerField + 1
+                }
+            }
+        }
+
+        println classesMap
+    }
+
+    class Field {
+        String jsonProperty
+        String fieldName
+        String table
+        String field
+        String action
+        String commentary
+    }
+
+    String htmlTable() {
+        return '<tr>\n' +
+                '    <td class="highlight-grey confluenceTd" style="width: 99.8724%;" colspan="6" data-highlight-colour="grey"><strong>Блок "Общие данные дела"</strong></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Идентификатор дела</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">coreCaseId</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">core_case</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">core_case_id</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Номер дела</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">caseNo</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">core_case</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">case_no</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр + редактирование</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Тип дела</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">caseTypeId</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">core_case</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">case_type_id</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Статус дела</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">caseStatus</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">core_case</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">person_status_id</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Состояние дела</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">caseStatusId</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">core_case</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">case_status_id</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Дата приема</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">receptionDate</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">core_case</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">reception_dt</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Дата создания</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">createDttm</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">core_case</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">create_dttm</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Подразделение</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">departmentCode</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">core_case</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">departament_code</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Подразделение</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">departmentId</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">core_case</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">departament_id</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Пользователь</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">createUser</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">core_case</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">create_user</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Источник данных</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">createSupplierId</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">core_case</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">source_id</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Категория поставщика</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">receptionSupplierId</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">core_case</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">reception_supplier_id</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td class="highlight-grey confluenceTd" style="width: 99.8724%;" colspan="6" data-highlight-colour="grey"><strong>Блок Связанные дела"</strong></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd"><span>Идентификатор дела</span></td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">coreCaseId</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">core_case</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">core_case_id</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd"><span>Номер дела</span></td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">caseNo</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">core_case</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">case_no</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd"><span>ФИО ФЛ/ Наименование ЮЛ</span></td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">fio</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd"><br></td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd"><br></td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd"><span>Документ</span></td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">documentInfo</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd"><br></td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">docBasisTypeId</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd"><span>Тип дела</span></td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">caseTypeId</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">core_case</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">case_type_id</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd"><span>Статус дела</span></td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd"><p>personStatusId</p></td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">core_case</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">person_status_id</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td class="highlight-grey confluenceTd" style="width: 99.8724%;" colspan="6" data-highlight-colour="grey"><strong>Блок "Данные дела"</strong></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Причина выдачи паспорта</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">caseReasonId</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">core_case</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">case_reason_id</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр + редактирование</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Дополнительная причина выдачи</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd"><span class="treeLabel stringLabel">additApplicationReasonRefId</span></td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">rfp_issuance_case</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">addit_application_reason_ref_id</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр + редактирование</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Место обращения</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">applicationPlaceRefId</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">rfp_case</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">application_place_ref_id</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр + редактирование</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td class="highlight-grey confluenceTd" style="width: 99.8724%;" colspan="6" data-highlight-colour="grey"><strong>Блок Сведения о браке"</strong></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Сведения о браке</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">maritalStatusRefId</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">rfp_issuance_case</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">marital_status_ref_id</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр + редактирование</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Дата события</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd"><span>spouseEventDt</span></td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">marital_info</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">spouse_first_dt</td>\n' +
+                '    <td class="confluenceTd">Просмотр + редактирование</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td class="confluenceTd">Супруг (а) имя</td>\n' +
+                '    <td class="confluenceTd">spouseFirstName</td>\n' +
+                '    <td class="confluenceTd">marital_info</td>\n' +
+                '    <td class="confluenceTd">spouse_first_name</td>\n' +
+                '    <td class="confluenceTd">Просмотр + редактирование</td>\n' +
+                '    <td class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td class="confluenceTd">Супруг (а) фамилия</td>\n' +
+                '    <td class="confluenceTd">spouseLastName</td>\n' +
+                '    <td class="confluenceTd">marital_info</td>\n' +
+                '    <td class="confluenceTd">spouse_last_name</td>\n' +
+                '    <td class="confluenceTd">Просмотр + редактирование</td>\n' +
+                '    <td class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td class="confluenceTd">Супруг (а) отчество</td>\n' +
+                '    <td class="confluenceTd">spouseMiddleName</td>\n' +
+                '    <td class="confluenceTd">marital_info</td>\n' +
+                '    <td class="confluenceTd">spouse_middle_name</td>\n' +
+                '    <td class="confluenceTd">Просмотр + редактирование</td>\n' +
+                '    <td class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td class="confluenceTd">Супруг (а) дата дня рождения</td>\n' +
+                '    <td class="confluenceTd">spouseBirthDt</td>\n' +
+                '    <td class="confluenceTd">marital_info</td>\n' +
+                '    <td class="confluenceTd">spouse_birth_dt</td>\n' +
+                '    <td class="confluenceTd">Просмотр + редактирование</td>\n' +
+                '    <td class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td class="confluenceTd">Супруг (а) дата брака</td>\n' +
+                '    <td class="confluenceTd">spouseEventDt</td>\n' +
+                '    <td class="confluenceTd">marital_info</td>\n' +
+                '    <td class="confluenceTd">spouse_event_dt</td>\n' +
+                '    <td class="confluenceTd">Просмотр + редактирование</td>\n' +
+                '    <td class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td class="highlight-grey confluenceTd" style="width: 99.8724%;" colspan="6" data-highlight-colour="grey"><strong>Блок "Дети"</strong></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd"><span>ФИО</span></td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">fio</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">core_person_document</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">last_name + first_name + middle_name</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр + редактирование</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Фамилия</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">lastName</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">core_person_document</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">last_name</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр + редактирование</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Имя</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">firstName</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">core_person_document</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">first_name</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр + редактирование</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Отчество</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">middleName</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">core_person_document</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">middle_name</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр + редактирование</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd"><span>Пол</span></td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">genderId</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">core_person_document</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">gender_id</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр + редактирование</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd"><span>Дата рождения</span></td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">birthDate</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">core_person_document</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">birthday_dt</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр + редактирование</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td class="highlight-grey confluenceTd" style="width: 99.8724%;" colspan="6" data-highlight-colour="grey"><strong>Блок "Процедуры дела"</strong></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Наименование операции</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">coreProcedureId</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">core_procedure</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">operation_id</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Дата и время операции</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">operationDttm</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">core_procedure</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">operation_dttm</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Наименование статуса</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">status</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">core_procedure</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">status_id</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Дата статуса</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">statusDt</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">core_procedure</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">status_dt</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">ФИО пользователя</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">createUser</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">core_procedure</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">create_user</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td class="highlight-grey confluenceTd" style="width: 99.8724%;" colspan="6" data-highlight-colour="grey"><strong>Блок "Входящие данные заявителя"</strong></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Тип документа</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">typeId</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">core_person_document</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">type_id</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр + редактирование</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd"><p><label>Серия</label></p></td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">seriesCode</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">core_person_document</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">series_name</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр + редактирование</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd"><p><label>Номер</label></p></td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">docNo</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">core_person_document</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">doc_no</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр + редактирование</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Кем выдан</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">issuePlaceDesc</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">core_person_document</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">issue_place_desc</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр + редактирование</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Код органа&nbsp;</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">departmentCode</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">core_person_document</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">authority_code</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр + редактирование</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Статус документа</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">personStatusId</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">core_document</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">status_id</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр + редактирование</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Дата выдачи</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">issueDt</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">core_person_document</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">issue_dt</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр + редактирование</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Дата окончания</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">validToDt</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">core_person_document</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">valid_to_dt</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр + редактирование</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Фамилия</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">lastName</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">core_person_document</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">last_name</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр + редактирование</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Имя</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">firstName</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">core_person_document</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">first_name</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр + редактирование</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Отчество</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">middleName</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">core_person_document</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">middle_name</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр + редактирование</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Дата рождения</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">birthdayDt</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">core_person_document</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">birthday_dt</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр + редактирование</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Пол</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">genderId</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">core_person_document</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">gender_id</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр + редактирование</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Гражданство&nbsp;</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">citizenshipId</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">core_person_document</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">citizenship_id</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр + редактирование</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Страна рождения</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">birthCountryId</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">core_person_document</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">birth_country_id</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр + редактирование</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Регион</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">birthPlaceRegionDesc</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">core_person_document</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">birth_place_region_desc</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр + редактирование</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Район</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">birthPlaceAreaDesc</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">core_person_document</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">birth_place_area_desc</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр + редактирование</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Город</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">birthPlaceCityDesc</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">core_person_document</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">birth_place_city_desc</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр + редактирование</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Населенный пункт</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">birthPlaceLocalityDesc</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">core_person_document</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">birth_place_locality_desc</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр + редактирование</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Место рождения</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">birthPlaceDesc</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">core_person_document</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">birthday_place_desc</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр + редактирование</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td class="highlight-grey confluenceTd" style="width: 99.8724%;" colspan="6" data-highlight-colour="grey"><strong>Блок "Исходящие данные заявителя"</strong></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Тип документа</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">typeId</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">core_document</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">type_id</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр + редактирование</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd"><p><label>Серия</label></p></td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">seriesCode</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">core_document</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">series_code</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр + редактирование</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd"><p><label>Номер</label></p></td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">docNo</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">core_document</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">doc_no</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр + редактирование</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Кем выдан</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">authorityDesc</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">core_document</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd"><p>authority_desc</p>\n' +
+                '        <p>authority_organ_id</p></td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр + редактирование</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Код органа&nbsp;</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">departmentCode</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">core_document</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">authority_code</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр + редактирование</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Статус документа</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">personStatusId</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">core_document</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">status_id</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр + редактирование</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Дата выдачи</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">issueDt</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">core_document</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">issued_dt</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр + редактирование</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Дата окончания</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">validToDt</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">core_person_document</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">valid_to_dt</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр + редактирование</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Фамилия</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">lastName</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">core_person_document</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">last_name</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр + редактирование</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Имя</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">firstName</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">core_person_document</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">first_name</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр + редактирование</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Отчество</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">middleName</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">core_person_document</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">middle_name</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр + редактирование</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Дата рождения</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">birthdayDt</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">core_document</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">birth_dt</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр + редактирование</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Пол</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">genderId</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">core_document</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">gender_cval</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр + редактирование</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Гражданство&nbsp;</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">citizenshipId</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">core_person_document</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">citizenship_id</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр + редактирование</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Страна рождения</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">birthCountryId</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">core_person_document</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">birth_country_id</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр + редактирование</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Регион</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">birthPlaceRegionDesc</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">core_person_document</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">birth_place_region_desc</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр + редактирование</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Район</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">birthPlaceAreaDesc</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">core_person_document</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">birth_place_area_desc</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр + редактирование</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Город</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">birthPlaceCityDesc</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">core_person_document</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">birth_place_city_desc</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр + редактирование</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Населенный пункт</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">birthPlaceLocalityDesc</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">core_person_document</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">birth_place_locality_desc</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр + редактирование</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Место рождения</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">birthPlaceDesc</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">core_document</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">doc_birth_place_desc</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр + редактирование</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td class="highlight-grey confluenceTd" style="width: 99.8724%;" title="Цвет фона: Серый" colspan="6"\n' +
+                '        data-highlight-colour="grey"><strong>Блок "Внешнее взаимодействие (запросы)"</strong><span><strong><span\n' +
+                '            class="url-scheme">http://</span><span class="url-host">172.24.14.130:38081</span></strong><span class="url-filename"><strong>/passport-rf-backend/ext-interaction/2824766720864947329] </strong><br></span></span>\n' +
+                '    </td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Ведомство</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">system: name</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">external_interaction</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">system_id</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td class="confluenceTd">ФИО</td>\n' +
+                '    <td class="confluenceTd"><span class="treeLabel stringLabel" title="">fio</span></td>\n' +
+                '    <td class="confluenceTd">core_person_document</td>\n' +
+                '    <td class="confluenceTd">last_name + first_name + middle_name</td>\n' +
+                '    <td class="confluenceTd">Просмотр</td>\n' +
+                '    <td class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Фамилия</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd"><br title="">lastName</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">core_person_document</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">last_name</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Имя</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">firstName</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">core_person_document</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">first_name</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Отчество&nbsp;</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">middleName</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">core_person_document</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">middle_name</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Тип</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">interactionType</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">external_interaction</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">interaction_type_id</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Дата создания запроса</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">createDt</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">external_interaction</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">create_dt</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Дата отправки запроса</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">requestDt</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">external_interaction</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">request_dt</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Ответ</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">responseCval</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">external_interaction</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">response_cval</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Дата ответа</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">responseDt</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">external_interaction</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">response_dt</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Дата обработки ответа</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">checkDt</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">external_interaction</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">check_dt</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td class="highlight-grey confluenceTd" style="width: 99.8724%;" title="Цвет фона: Серый" colspan="6"\n' +
+                '        data-highlight-colour="grey"><strong>Блок "Внешнее взаимодействие (выгрузки)"</strong></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Идентификатор</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd"><span class="treeLabel stringLabel">exportHistorySrcId</span></td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">export_history_src</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">export_history_src_id</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Дата события (системная)</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd"><span class="treeLabel stringLabel">createDttm</span></td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">export_history_src</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">create_dttm</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Дата события логическая</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd"><span class="treeLabel stringLabel">eventDt</span></td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">export_history_src</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">event_dt</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Дата завершения выгрузки</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd"><span class="treeLabel stringLabel">finishDt</span></td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">export_history_src</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">finish_dt</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Тип выгрузки</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd"><span class="treeLabel stringLabel">typeCval</span></td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">export_history_src</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">type_cval</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Статус</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd"><span class="treeLabel stringLabel">statusCval</span></td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">export_history_src</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">status_cval</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td class="highlight-grey confluenceTd" style="width: 99.8724%;" colspan="6" data-highlight-colour="grey"><strong>Блок "Семья"</strong></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Мать</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd"><span class="treeLabel stringLabel">motherFioName</span></td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">rfp_issuance_case</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">father_fio_name</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр + редактирование</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Отец</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd"><span class="treeLabel stringLabel">fatherFioName</span></td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">rfp_issuance_case</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">mother_fio_name</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр + редактирование</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td class="highlight-grey confluenceTd" style="width: 99.8724%;" colspan="6" data-highlight-colour="grey"><strong>Блок "Платежные документы"</strong></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Льготная категория</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">???</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">???</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">???</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd"><br></td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Реестр платежных документов</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">???</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">???</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">???</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd"><br></td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Назначение платежа</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">purposeName</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">payment</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd"><p>purpose_name</p>\n' +
+                '        <p>supplier_bill_uin</p></td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">УИП</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">paymentKey</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">payment</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">payment_key</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">КБК</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">kbk</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">payment</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">kbk</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Дата платежа</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">paymentDttm</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">payment</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">payment_dttm</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Сумма</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">amountRubCoin</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">payment</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">amount_rub_coin</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Оплачен</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">statusBool</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">payment</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">status_bool</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Статус квитирования (ГИС ГМП)</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">billStatusInd</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">payment</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">bill_status_ind</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td class="highlight-grey confluenceTd" style="width: 99.8724%;" colspan="6" data-highlight-colour="grey"><strong>Блок "Сведения о начислениях"</strong></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">УИН</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">supplierBillUin</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">charge</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">supplier_bill_uin</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Сумма</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">amountRubCoin</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">charge</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">amount_rub_coin</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Тип плательщика&nbsp;</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">payerKindMnemonic</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">charge</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">payer_kind_code</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Тип документа удостоверяющего личность</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd"><p>idDocument" : {</p> <p>"typeMnemonic</p></td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">charge</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">payer_doc_type_id</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td class="highlight-grey confluenceTd" style="width: 99.8724%;" colspan="6" data-highlight-colour="grey"><strong>Блок "Электронные копии документов"</strong></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Тип</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">Name</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">core_uploaded_application</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">case_type_id</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Номер документа&nbsp;</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">recordId</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">core_uploaded_application</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">application_no</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Дата добавления</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">createDttm</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">core_uploaded_application</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">reception_dt</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Описание</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">description</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">core_file_storage</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">file_desc</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр + редактирование</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Пользователь</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">createUser</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">core_uploaded_application</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">processed_user</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Электронная почта</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">email</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">core_contact_info</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">email</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр + редактирование</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Телефон</td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">phone</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">core_contact_info</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">phone</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр + редактирование</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '    <td style="width: 39.6684%;" class="confluenceTd">Согласие гражданина на осуществление оценки качества предоставления государственной услуги </td>\n' +
+                '    <td style="width: 12.1811%;" class="confluenceTd">surveyAgreementBool</td>\n' +
+                '    <td style="width: 11.4158%;" class="confluenceTd">???</td>\n' +
+                '    <td style="width: 16.3903%;" class="confluenceTd">???</td>\n' +
+                '    <td style="width: 12.6913%;" class="confluenceTd">Просмотр</td>\n' +
+                '    <td style="width: 7.52551%;" class="confluenceTd"><br></td>\n' +
+                '</tr>\n' +
+                '<tr>\n'
+    }
 }
+
+
+
+
+
+
+
+

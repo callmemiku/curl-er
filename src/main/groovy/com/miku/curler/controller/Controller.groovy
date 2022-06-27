@@ -1,5 +1,6 @@
 package com.miku.curler.controller
 
+
 import com.miku.curler.service.Service
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.scheduling.annotation.Async
@@ -66,4 +67,8 @@ class Controller {
         return "Case types update started @ ${LocalDateTime.now()}!"
     }
 
+    @PostMapping("/test")
+    def nothing() {
+        service.genClass()
+    }
 }
